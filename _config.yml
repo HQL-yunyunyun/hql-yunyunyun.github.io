@@ -3,10 +3,10 @@
 #
 
 # Name of your site (displayed in the header)
-name: Kiko Now
+name: HQL iOS
 
 # Short bio or description (displayed in the header)
-description: Web Developer from Somewhere
+description: iOS Developer from Somewhere
 
 #
 # Flags below are optional
@@ -38,22 +38,22 @@ paginate: 5
 footer-links:
   behance: # https://www.behance.net/<username>
   dribbble:
-  email:
+  email: heqiliang1101@gmail.com
   facebook:
   flickr:
-  github: AWEEKJ/kiko-now
+  github: HQL-yunyunyun
   googleplus: # anything in your profile username that comes after plus.google.com/
   instagram:
-  linkedin:
+  linkedin: linkedin.com/in/启亮-何-155950122
   pinterest:
   rss: # just type anything here for a working RSS icon
-  stackoverflow: # your stackoverflow profile, e.g. "users/50476/bart-kiers"
+  stackoverflow: users/6690752/何启亮 # your stackoverflow profile, e.g. "users/50476/bart-kiers"
   tumblr: # https://<username>.tumblr.com
-  twitter: jekyllrb
+  twitter: 
   youtube: # channel/<your_long_string> or user/<user-name>
 
 # Text under the icons in footer
-footer-text: © 2017 Kiko Now
+footer-text: © 2019 HQL
 
 # Enter your Disqus shortname (not your username) to enable commenting on posts
 # You can find your shortname on the Settings page of your Disqus account
@@ -64,7 +64,7 @@ google_analytics:
 
 # Your website URL (e.g. http://barryclark.github.io or http://www.barryclark.co)
 # Used for Sitemap.xml and your RSS feed
-url:
+url: https://HQL-yunyunyun.github.io
 
 # If you're hosting your site at a Project repository on GitHub pages
 # (http://yourusername.github.io/repository-name)
