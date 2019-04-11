@@ -47,7 +47,8 @@ weak和assign的不同点：
 
 @property的本质: *ivar+getter+setter*
 
-“属性” (property)作为 Objective-C 的一项特性，主要的作用就在于封装对象中的数据。 Objective-C 对象通常会把其所需要的数据保存为各种实例变量。实例变量一般通过“存取方法”(access method)来访问。其中，“获取方法” (getter)用于读取变量值，而“设置方法” (setter)用于写入变量值。这个概念已经定型，并且经由“属性”这一特性而成为Objective-C 2.0的一部分。 而在正规的 Objective-C 编码风格中，存取方法有着严格的命名规范。 正因为有了这种严格的命名规范，所以 Objective-C 这门语言才能根据名称自动创建出存取方法。
+“属性” (property)作为 Objective-C 的一项特性，主要的作用就在于封装对象中的数据。Objective-C 对象通常会把其所需要的数据保存为各种实例变量。实例变量一般通过“存取方法”(access method)来访问。其中，“获取方法” (getter)用于读取变量值，而“设置方法” (setter)用于写入变量值。这个概念已经定型，并且经由“属性”这一特性而成为Objective-C 2.0的一部分。 而在正规的 Objective-C 编码风格中，存取方法有着严格的命名规范。 正因为有了这种严格的命名规范，所以 Objective-C 这门语言才能根据名称自动创建出存取方法。
+
 *property*在runtime中的定义*objc_property_t*:
 
 ```c
@@ -69,15 +70,18 @@ typedef struct {
 } objc_property_attribute_t;
 ```
 而*attributes*的具体内容是什么呢？其实，包括：类型，原子性，内存语义和对应的实例变量。
+
 例如：我们定义一个*string*的property *@property (nonatomic, copy) NSString *string;*，通过*property_getAttributes(property)*获取到*attributes*并打印出来之后的结果为*T@“NSString”,C,N,V_string*
 其中T就代表类型，可参阅 [Type Encodings](https://developer.apple.com/library/content/documentation/Cocoa/Conceptual/ObjCRuntimeGuide/Articles/ocrtTypeEncodings.html#//apple_ref/doc/uid/TP40008048-CH100-SW1) ，C就代表Copy，N代表nonatomic，V就代表对于的实例变量。
 
 添加了一个属性之后相关的代码会大致生成一下这些内容:
+
 1. *OBJC_IVAR_$*类名*$*属性名称：该属性的“偏移量” (offset)，这个偏移量是“硬编码” (hardcode)，表示该变量距离存放对象的内存区域的起始地址有多远。
 2. *setter* 与 *getter* 方法对应的实现函数
 3. *ivar_list*：成员变量列表
 4. *method_list*：方法列表
 5. *prop_list*：属性列表
+
 在每次新增加一个属性，系统都会在*ivar_list*中添加一个成员变量的描述，在*method_list*中添加setter和getter方法的描述，在*prop_list*添加一个属性的描述，然后计算出该属性在对象中的偏移量，然后给出setter和getter方法对应的实现，在setter方法中从偏移量的位置开始赋值，在getter方法中从偏移量开始取值，为了能够读取正确的字节数，系统对象偏移量的指针类型进行了类型强转。
 
 
@@ -98,7 +102,8 @@ runtime 对注册的类， 会进行布局，对于 weak 对象会放入一个 h
 这个异常出现的原因很简单:
 `当调用该对象的上的某个方法时，而该对象没有实现该方法，那么就会报这个错误。`
 如何解决:
-::objc是动态语言，每个方法在运行时都会被动态转为消息转发。objc_msgSend(receiver, selector)::ocjc在向一个对象发送消息时，runtime库会根据对象的ISA指针找到该对象实际所属的类，然后在该类的方法列表以及父类方法列表中寻找方法运行，如果在最顶层的父类方法列表中都没有找到相应的方法是，程序就会抛出异常。
+`objc是动态语言，每个方法在运行时都会被动态转为消息转发。objc_msgSend(receiver, selector)`ocjc在向一个对象发送消息时，runtime库会根据对象的ISA指针找到该对象实际所属的类，然后在该类的方法列表以及父类方法列表中寻找方法运行，如果在最顶层的父类方法列表中都没有找到相应的方法是，程序就会抛出异常。
+
 而objc的运行时给出了三次的拯救机会，现在很多[防止崩溃的库](https://neyoufan.github.io/2017/01/13/ios/BayMax_HTSafetyGuard)都是使用这个机制来防止这个异常的出现：
 
 1. Method resolution：
@@ -117,6 +122,7 @@ objc运行时会调用`+resloveInstanceMethod:`或者`+resolveClassMethod:`，�
 // 3.
 - (void)forwardInvocation:(NSInvocation *)anInvocation; // 生成一个invocation对象
 ```
+
 
 
 ## 7.一个obj对象如何进行内存布局？（考虑有父类的情况）
@@ -253,8 +259,10 @@ runloop有一个mode属性，这个属性的主要作用是指定事件在运行
 
 而我们有时候在调用NSTimer时，在滑动页面的时候Timer会暂停回调也是因为runloop的mode属性的原因：
 runloop只能运行在一种mode下，如果要换mode，当前的loop也需要停下重启成新的。利用这个机制，ScrollView滚动过程中NSDefaultRunLoopMode（kCFRunLoopDefaultMode）的mode会切换到UITrackingRunLoopMode来保证ScrollView的流畅滑动：只能在NSDefaultRunLoopMode模式下处理的事件会影响ScrollView的滑动。
+
 如果我们把一个NSTimer对象以NSDefaultRunLoopMode（kCFRunLoopDefaultMode）添加到主运行循环中的时候, ScrollView滚动过程中会因为mode的切换，而导致NSTimer将不再被调度。
 同时因为mode还是可定制的，所以：
+
 Timer计时会被scrollView的滑动影响的问题可以通过将timer添加到NSRunLoopCommonModes（kCFRunLoopCommonModes）来解决。
 
 一般来说，一个线程一次只能执行一个任务，执行完成后线程就会退出，这就是runloop要做的事情。如果我们需要一个机制，让线程能随时处理事件但并不退出，通常的代码逻辑 是这样的：
@@ -281,15 +289,21 @@ function loop() {
 ![释放时机](https://raw.githubusercontent.com/HQL-yunyunyun/hql-yunyunyun.github.io/master/post_image/objective-c部分总结_释放时机.png "释放时机"){: .center-image}
 
 从程序启动到加载完成是一个完整的运行循环，然后会停下来，等待用户交互，用户的每一次交互都会启动一次循环，来处理用户所有的点击事件、触摸事件。
+
 我们都知道：**所有autorelease的对象，在出了作用域之后，会被自动添加到最近创建的自动释放吃中**。
 但是如果每次都放进应用程序的*main.m*中的*autoreleasepool*中，迟早会被撑满。在这个过程中必定有一个释放的动作，何时？
+
 `在一次完整的运行循环结束之前，会被销毁。`
+
 那什么时间会创建自动释放池？
+
 `运行循环检测到事件并启动后，就会创建自动释放池。`
 子线程的runloop默认是不工作的，无法主动创建，必须得手动创建。
+
 自定义的*NSOperation*和*NSThread*需要手动创建自动释放池。比如： 自定义的*NSOperation*类中的*main*方法里就必须添加自动释放池。否则出了作用域后，自动释放对象会因为没有自动释放池去处理它，而造成内存泄露。
 但对于*blockOperation*和*invocationOperation*这种默认的*Operation*，系统已经帮我们封装好了，不需要手动创建自动释放池。
-*@autoreleasepool*当自动释放池被销毁或者耗尽时，会向自动释放池中的所有对象发送*release*消息，释放自动释放池中的所有对象。
+
+@autoreleasepool*当自动释放池被销毁或者耗尽时，会向自动释放池中的所有对象发送*release*消息，释放自动释放池中的所有对象。*
 如果在一个*vc*的*viewDidLoad*中创建一个*Autorelease*对象，那么该对象会在*viewDidAppear*方法执行前就被销毁了。[黑幕背后的Autorelease · sunnyxx的技术博客](http://blog.sunnyxx.com/2014/10/15/behind-autorelease/)
 
 
@@ -297,9 +311,13 @@ function loop() {
 ## 13.block的使用注意点
 
 循环引用，就是一个对象a强引用了对象b，而b又强引用了对象a，这样就会造成循环引用，尤其在使用block的时候得注意这个问题。
+
 如果对象a持有了一个block，而又在block中强引用了对象a(一般是调用self、或者是属性)，那么就会形成循环引用，为什么呢？
+
 * 因为block都会对block内的对象进行捕获，并会强引用[iOS底层原理总结 - 探寻block的本质（一） - 掘金](https://juejin.im/post/5b0181e15188254270643e88#heading-12)。
 
 block内如何修改block外部变量？为什么？
+
 可以使用*__block* 去修饰外部变量。
+
 我们都知道：*Block*不允许修改外部变量的值，这里所说的外部变量的值，指的是栈中指针的内存地址。*__block*所起到的作用就是只要观察到该变量被 *block* 所持有，就将“外部变量”在栈中的内存地址放到了堆中。进而在*block*内部也可以修改外部变量的值。
