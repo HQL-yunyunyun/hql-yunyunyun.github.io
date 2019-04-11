@@ -112,7 +112,7 @@ ISA指针
 类的实例变量
 * 根对象就是NSObject，它的superclass指针指向nil
 * 类对象既然称为对象，那它也是一个实例。类对象中也有一个isa指针指向它的元类(meta class)，即类对象是元类的实例。元类内部存放的是类方法列表，根元类的isa指针指向自己，superclass指针指向NSObject类。
-![isa指针的示意图](https://github.com/HQL-yunyunyun/hql-yunyunyun.github.io/blob/master/post_image/objective-c部分总结_isa指针示意图.png "isa指针的示意图"){: .center-image}
+![isa指针的示意图](https://raw.githubusercontent.com/HQL-yunyunyun/hql-yunyunyun.github.io/master/post_image/objective-c部分总结_isa指针示意图.png "isa指针的示意图"){: .center-image}
 - - - -
 ## 8.objc内存销毁
 1. 调用`-release:` ： 引用计数变为0
@@ -239,7 +239,7 @@ process_message(message);
 2. 系统自动去释放 — 不手动指定*autoreleasepool*。
 *autorelease*对象出了作用域之后，会被添加到最近一次创建的自动释放池中，并会在当前的*runloop*迭代结束时释放。
 释放时机可以总结为以下图示：
-![释放时机](https://github.com/HQL-yunyunyun/hql-yunyunyun.github.io/blob/master/post_image/objective-c部分总结_释放时机.png "释放时机"){: .center-image}
+![释放时机](https://raw.githubusercontent.com/HQL-yunyunyun/hql-yunyunyun.github.io/master/post_image/objective-c部分总结_释放时机.png "释放时机"){: .center-image}
 
 从程序启动到加载完成是一个完整的运行循环，然后会停下来，等待用户交互，用户的每一次交互都会启动一次循环，来处理用户所有的点击事件、触摸事件。
 我们都知道：**所有autorelease的对象，在出了作用域之后，会被自动添加到最近创建的自动释放吃中**。
