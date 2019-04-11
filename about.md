@@ -4,11 +4,13 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+### 个人信息
+- 何启亮, 男, 1994年生
+- Email：heqiliang1101@gmail.com
 
-### More Information
+### 个人描述
 
-A place to include any other types of information that you'd like to include about yourself.
+从2016年毕业以来都在进行iOS开发，最近是在开发iOS端的视频编辑软件。
 
 ### Contact me
 
