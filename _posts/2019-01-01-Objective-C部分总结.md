@@ -5,9 +5,11 @@ tags:
   - Objective-C
   - 基础
 ---
-# Objective-C部分总结
+
+## 简述
+这是一篇对OC一些比较基础的归纳。
 [参考文章](https://github.com/ChenYilong/iOSInterviewQuestions/blob/master/01%E3%80%8A%E6%8B%9B%E8%81%98%E4%B8%80%E4%B8%AA%E9%9D%A0%E8%B0%B1%E7%9A%84iOS%E3%80%8B%E9%9D%A2%E8%AF%95%E9%A2%98%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88/%E3%80%8A%E6%8B%9B%E8%81%98%E4%B8%80%E4%B8%AA%E9%9D%A0%E8%B0%B1%E7%9A%84iOS%E3%80%8B%E9%9D%A2%E8%AF%95%E9%A2%98%E5%8F%82%E8%80%83%E7%AD%94%E6%A1%88%EF%BC%88%E4%B8%8A%EF%BC%89.md#%E4%BC%98%E5%8C%96%E9%83%A8%E5%88%86)
-- - - -
+---
 ## 1.什么情况使用weak关键字，相比assign有什么不同？
 使用weak关键字的情况：
 1. 在ARC中，会出现循环引用的情况，这个时候就需要使用weak关键字来修饰，比如delegate属性.
@@ -15,42 +17,42 @@ tags:
 weak和assign的不同点：
 1. weak此特质表明该属性定义了一种“非拥有关系” (nonowning relationship)。为这种属性设置新值时，设置方法既不保留新值，也不释放旧值。此特质同assign类似， 然而在属性所指的对象遭到摧毁时，属性值也会清空(nil out)。 而assign的“设置方法”只会执行针对“纯量类型” (scalar type，例如 CGFloat 或 NSlnteger 等)的简单赋值操作。
 2. assign可以用非oc对象，但weak必须用于oc对象。
-- - - -
+---
 ## 2.怎么用copy关键字
 1. NSString、NSArray、NSDictionary就一般使用copy关键字，因为他们都有对应的可变类型：
 因为这几个类有对应的可变类型的，如果使用strong修饰，那么有可能在不知情的情况下改变值，所以这里需要用copy来修饰。
 2. block一般也使用copy关键字：
 block 使用 copy 是从 MRC 遗留下来的“传统”,在 MRC 中,方法内部的 block 是在栈区的,使用 copy 可以把它放到堆区.在 ARC 中写不写都行：对于 block 使用 copy 还是 strong 效果是一样的，但写上 copy 也无伤大雅，还能时刻提醒我们：编译器自动对 block 进行了 copy 操作。如果不写 copy ，该类的调用者有可能会忘记或者根本不知道“编译器会自动对 block 进行了 copy 操作”，他们有可能会在调用之前自行拷贝属性值。
-- - - -
+---
 ## 3.如何让自己的类用 copy 修饰符？如何重写带 copy 关键字的 setter？
 若想令自己所写的对象具有拷贝功能，则需实现 NSCopying 协议。如果自定义的对象分为可变版本与不可变版本，那么就要同时实现NSCopying与NSMutableCopying协议。
 具体步骤：
 1. 需声明该类遵从 NSCopying 协议
 2. 实现 NSCopying 协议。该协议只有一个方法:
-``` objc
+```objc
 - (id)copyWithZone:(NSZone *)zone;
 ```
-- - - -
+---
 ## 4.@property 的本质是什么？ivar、getter、setter 是如何生成并添加到这个类中的
 @property的本质: *ivar+getter+setter*
 “属性” (property)作为 Objective-C 的一项特性，主要的作用就在于封装对象中的数据。 Objective-C 对象通常会把其所需要的数据保存为各种实例变量。实例变量一般通过“存取方法”(access method)来访问。其中，“获取方法” (getter)用于读取变量值，而“设置方法” (setter)用于写入变量值。这个概念已经定型，并且经由“属性”这一特性而成为Objective-C 2.0的一部分。 而在正规的 Objective-C 编码风格中，存取方法有着严格的命名规范。 正因为有了这种严格的命名规范，所以 Objective-C 这门语言才能根据名称自动创建出存取方法。
 *property*在runtime中的定义*objc_property_t*:
-``` c
+```c
 typedef struct objc_property *objc_property_t;
 ```
 而*objc_prperty*是一个结构体：
-``` objc
+```objc
 struct property_t {
 const char *name;
 const char *attributes;
 };
 ```
 *attributes*在本质上是*objc_property_attribute_t*：
-``` objc
+```objc
 /// Defines a property attribute
 typedef struct {
-const char *name;           /**< The name of the attribute */
-const char *value;          /**< The value of the attribute (usually empty) */
+    const char *name;           /**< The name of the attribute */
+    const char *value;          /**< The value of the attribute (usually empty) */
 } objc_property_attribute_t;
 ```
 而*attributes*的具体内容是什么呢？其实，包括：类型，原子性，内存语义和对应的实例变量。
@@ -64,14 +66,14 @@ const char *value;          /**< The value of the attribute (usually empty) */
 4. *method_list*：方法列表
 5. *prop_list*：属性列表
 在每次新增加一个属性，系统都会在*ivar_list*中添加一个成员变量的描述，在*method_list*中添加setter和getter方法的描述，在*prop_list*添加一个属性的描述，然后计算出该属性在对象中的偏移量，然后给出setter和getter方法对应的实现，在setter方法中从偏移量的位置开始赋值，在getter方法中从偏移量开始取值，为了能够读取正确的字节数，系统对象偏移量的指针类型进行了类型强转。
-- - - -
+---
 ## 5.runtime实现weak属性
 weak属性特点:
 weak 此特质表明该属性定义了一种“非拥有关系” (nonowning relationship)。为这种属性设置新值时，设置方法既不保留新值，也不释放旧值。此特质同 assign 类似， 然而在属性所指的对象遭到摧毁时，属性值也会清空(nil out)。
 
 runtime是如何实现weak变量的自动置为nil?
 runtime 对注册的类， 会进行布局，对于 weak 对象会放入一个 hash 表中。 用 weak 指向的对象内存地址作为 key，当此对象的引用计数为0的时候会 dealloc，假如 weak 指向的对象内存地址是a，那么就会以a为键， 在这个 weak 表中搜索，找到所有以a为键的 weak 对象，从而设置为 nil。
-- - - -
+---
 ## 6.unrecognized selector异常
 这个异常出现的原因很简单:
 `当调用该对象的上的某个方法时，而该对象没有实现该方法，那么就会报这个错误。`
@@ -94,7 +96,7 @@ objc运行时会调用`+resloveInstanceMethod:`或者`+resolveClassMethod:`，�
 // 3.
 - (void)forwardInvocation:(NSInvocation *)anInvocation; // 生成一个invocation对象
 ```
-- - - -
+---
 ## 7.一个obj对象如何进行内存布局？（考虑有父类的情况）
 * 所以父类成员变量和自己的成员变量都会存放在该对象所对应的储存空间中。
 * 每一个对象内部都有一个isa指针指向他的类对象，类对象中存放着本对象的：
@@ -103,17 +105,17 @@ objc运行时会调用`+resloveInstanceMethod:`或者`+resolveClassMethod:`，�
 3. 属性列表
 它内部也有一个isa指针指向元对象(meta class),元对象内部存放的是类方法列表,类对象内部还有一个superclass的指针,指向他的父类对象。
 每个 Objective-C 对象都有相同的结构，如下图所示：
-*Objective-C 对象的结构图*
-ISA指针
-根类的实例变量
-倒数第二层父类的实例变量
-…
-父类的实例变量
-类的实例变量
+        *Objective-C 对象的结构图*
+                ISA指针
+                根类的实例变量
+                倒数第二层父类的实例变量
+                …
+                父类的实例变量
+                类的实例变量
 * 根对象就是NSObject，它的superclass指针指向nil
 * 类对象既然称为对象，那它也是一个实例。类对象中也有一个isa指针指向它的元类(meta class)，即类对象是元类的实例。元类内部存放的是类方法列表，根元类的isa指针指向自己，superclass指针指向NSObject类。
-![isa指针的示意图](https://raw.githubusercontent.com/HQL-yunyunyun/hql-yunyunyun.github.io/master/post_image/objective-c部分总结_isa指针示意图.png "isa指针的示意图"){: .center-image}
-- - - -
+![isa指针的示意图](https://raw.githubusercontent.com/HQL-yunyunyun/hql-yunyunyun.github.io/master/post_image/objective-c部分总结_isa指针示意图.png "isa指针的示意图")
+---
 ## 8.objc内存销毁
 1. 调用`-release:` ： 引用计数变为0
 * 对象正在被销毁，生命周期即将结束。
@@ -135,34 +137,34 @@ ISA指针
 对*objc-runtime-new.mm* 文件里与*_objc_msgForward*有关的三个函数使用伪代码展示下：
 ```c
 id objc_msgSend(id self, SEL op, ...) {
-if (!self) return nil;
-IMP imp = class_getMethodImplementation(self->isa, SEL op);
-imp(self, op, ...); //调用这个函数，伪代码...
+    if (!self) return nil;
+    IMP imp = class_getMethodImplementation(self->isa, SEL op);
+    imp(self, op, ...); //调用这个函数，伪代码...
 }
 
 //查找IMP
 IMP class_getMethodImplementation(Class cls, SEL sel) {
-if (!cls || !sel) return nil;
-IMP imp = lookUpImpOrNil(cls, sel);
-if (!imp) return _objc_msgForward; //_objc_msgForward 用于消息转发
-return imp;
+    if (!cls || !sel) return nil;
+    IMP imp = lookUpImpOrNil(cls, sel);
+    if (!imp) return _objc_msgForward; //_objc_msgForward 用于消息转发
+    return imp;
 }
 
 IMP lookUpImpOrNil(Class cls, SEL sel) {
-if (!cls->initialize()) {
-_class_initialize(cls);
-}
+    if (!cls->initialize()) {
+        _class_initialize(cls);
+    }
 
-Class curClass = cls;
-IMP imp = nil;
-do { //先查缓存,缓存没有时重建,仍旧没有则向父类查询
-if (!curClass) break;
-if (!curClass->cache) fill_cache(cls, curClass);
-imp = cache_getImp(curClass, sel);
-if (imp) break;
-} while (curClass = curClass->superclass);
+    Class curClass = cls;
+    IMP imp = nil;
+    do { //先查缓存,缓存没有时重建,仍旧没有则向父类查询
+        if (!curClass) break;
+        if (!curClass->cache) fill_cache(cls, curClass);
+        imp = cache_getImp(curClass, sel);
+        if (imp) break;
+    } while (curClass = curClass->superclass);
 
-return imp;
+    return imp;
 }
 ```
 而根据第六个问题中的回答可以得知方法调用的一些步骤如下:
@@ -187,7 +189,7 @@ return imp;
 _objc_msgForward是 IMP 类型，用于消息转发的：当向一个对象发送一条消息，但它并没有实现的时候，_objc_msgForward会尝试做消息转发。
 */
 ```
-- - - -
+---
 ## 10.runloop和线程的关系
 runloop和线程是紧密相连的，可以说runloop是为了线程而生的。Run loops是线程的基础架构部分， Cocoa 和 CoreFundation 都提供了 run loop 对象方便配置和管理线程的 run loop （以下都以 Cocoa 为例）。每个线程，包括程序的主线程（ main thread ）都有与之相应的 run loop 对象。
 runloop和线程的关系:
@@ -195,15 +197,15 @@ runloop和线程的关系:
 在iOS程序中，程序启动后会有一个如下的函数
 ```objc
 int main(int argc, char * argv[]) {
-@autoreleasepool {
-return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
-}
+    @autoreleasepool {
+        return UIApplicationMain(argc, argv, nil, NSStringFromClass([AppDelegate class]));
+    }
 }
 ```
 `UIApplicationMain()`函数就是为*main thread*设置一个*NSRunloop*对象。
 2. 对于其他线程来说，runloop是默认不开启的。
 3. 在任何一个cocoa程序的线程中都可以通过以下代码来获得当前线程的runloop:`NSRunLoop *runloop = [NSRunLoop currentRunLoop];`
-- - - -
+---
 ## 11.runloop详解
 runloop有一个mode属性，这个属性的主要作用是指定事件在运行循环中的优先级：
 * NSDefaultRunLoopMode（kCFRunLoopDefaultMode）：默认，空闲状态
@@ -223,16 +225,15 @@ Timer计时会被scrollView的滑动影响的问题可以通过将timer添加到
 一般来说，一个线程一次只能执行一个任务，执行完成后线程就会退出，这就是runloop要做的事情。如果我们需要一个机制，让线程能随时处理事件但并不退出，通常的代码逻辑 是这样的：
 ``` c
 function loop() {
-initialize();
-do {
-var message = get_next_message();
-process_message(message);
-} while (message != quit);
+    initialize();
+    do {
+        var message = get_next_message();
+        process_message(message);
+    } while (message != quit);
 }
 ```
-
 在objc中，对象通常是通过retainCount的机制来决定是否释放的，在每次runloop的时候，都会检查一遍对象的retainCount，如果为0则将对象释放。
-- - - -
+---
 ## 12.不手动指定autoreleasepool的前提下，一个autorealese对象在什么时刻释放？（比如在一个vc的viewDidLoad中创建)
 分两种情况:
 1. 手动干预释放时机 — 指定*autoreleasepool*就是所谓的：当前作用域大括号结束时释放；
@@ -253,7 +254,7 @@ process_message(message);
 *@autoreleasepool*当自动释放池被销毁或者耗尽时，会向自动释放池中的所有对象发送*release*消息，释放自动释放池中的所有对象。
 如果在一个*vc*的*viewDidLoad*中创建一个*Autorelease*对象，那么该对象会在*viewDidAppear*方法执行前就被销毁了。
 [黑幕背后的Autorelease · sunnyxx的技术博客](http://blog.sunnyxx.com/2014/10/15/behind-autorelease/)
-- - - -
+---
 ## 13.block的使用注意点
 循环引用，就是一个对象a强引用了对象b，而b又强引用了对象a，这样就会造成循环引用，尤其在使用block的时候得注意这个问题。
 如果对象a持有了一个block，而又在block中强引用了对象a(一般是调用self、或者是属性)，那么就会形成循环引用，为什么呢？
