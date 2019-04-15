@@ -1,4 +1,10 @@
-# GPUImage ‘Incomplete filter FBO: 36055’ bug修复记录
+---
+layout:post
+title:GPUImage ‘Incomplete filter FBO: 36055’ bug修复记录
+tags:
+    - bug记录
+---
+## GPUImage ‘Incomplete filter FBO: 36055’ bug修复记录
 最近在开发的过程中使用GPUImage导出视频时遇到一个bug，断言在`[GPUImageMovieWrite createDataFBO]` 方法中的`NSAssert(status == GL_FRAMEBUFFER_COMPLETE, @"Incomplete filter FBO: %d", status);`。
 
 在google的过程中找到了[The current version, the video processing error at the beginning . · Issue #1276 · BradLarson/GPUImage · GitHub](https://github.com/BradLarson/GPUImage/issues/1276)。
