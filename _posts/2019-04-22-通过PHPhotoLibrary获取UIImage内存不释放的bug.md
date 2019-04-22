@@ -10,6 +10,7 @@ tags:
 现在有这么一个场景：
 * 需要从相册中获取数量不定的图片，然后需要将获取到的图片转换成视频，因为现在照片有可能需要在iCloud上下载，所以不能获取一张图片之后直接生成视频，而是需要将所有选中的图片获取之后并记录在数组当中，当所有图片获取完成再逐张图片生成视频，在所有操作都完成之后就将图片释放。
 * 获取图片使用的方法是:
+
 ```objc
 - (PHImageRequestID)requestImageForAsset:(PHAsset *)asset 
                               targetSize:(CGSize)targetSize 
@@ -17,6 +18,7 @@ tags:
                                  options:(nullable PHImageRequestOptions *)options 
                            resultHandler:(void (^)(UIImage *__nullable result, NSDictionary *__nullable info))resultHandler;
 ```
+
 * 流程： 选中图片(PHAsset) --> 循环选中图片数组(PHAsset)获取图片 --> 将获取到的图片都保存到一个数组中 --> 循环image数组生成视频 --> 释放image数组
 bug：
 * 调用PHPhotoLibrary的方法获取图片时，图片将解码并将数据存在内存当中，这时根据我们的逻辑将对UIImage进行强引用，并在完成图片转视频的操作之后将UIImage给释放掉。
